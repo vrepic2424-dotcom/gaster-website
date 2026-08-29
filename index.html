@@ -1,0 +1,272 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>W.D. Gaster is REAL</title>
+
+    <style>
+        html, body {
+            margin: 0;
+            min-height: 100%;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: #050505;
+            color: white;
+            font-family: "Comic Sans MS", "Comic Sans", cursive;
+            text-align: center;
+            overflow: hidden;
+        }
+
+        .container {
+            max-width: 900px;
+            padding: 30px;
+            padding-bottom: 70px;
+        }
+
+        .gaster-image {
+            max-width: 80vw;
+            max-height: 55vh;
+            display: block;
+            margin: 0 auto;
+            filter:
+                drop-shadow(0 0 10px white)
+                drop-shadow(0 0 25px #8000ff)
+                drop-shadow(0 0 45px #00ffff);
+        }
+
+        .text {
+            margin-top: 30px;
+            font-size: clamp(24px, 4vw, 50px);
+            font-weight: bold;
+            background: linear-gradient(
+                90deg,
+                red,
+                orange,
+                yellow,
+                lime,
+                cyan,
+                blue,
+                violet,
+                red
+            );
+            background-size: 400% 100%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: rainbow 3s linear infinite;
+            text-shadow: 0 0 5px rgba(255,255,255,0.5);
+        }
+
+        .link {
+            display: inline-block;
+            margin-top: 25px;
+            font-size: clamp(20px, 3vw, 35px);
+            font-weight: bold;
+            color: white;
+            text-decoration: none;
+            border: 3px solid white;
+            padding: 10px 25px;
+            border-radius: 12px;
+            box-shadow:
+                0 0 10px white,
+                0 0 25px #00ffff;
+            transition:
+                box-shadow 0.2s,
+                background 0.2s;
+        }
+
+        .link:hover {
+            box-shadow:
+                0 0 15px white,
+                0 0 40px #ff00ff,
+                0 0 70px #00ffff;
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .music-disclaimer {
+            position: fixed;
+            inset: 0;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.9);
+        }
+
+        .disclaimer-box {
+            max-width: 500px;
+            padding: 30px;
+            border: 3px solid white;
+            border-radius: 15px;
+            background: #111;
+            box-shadow:
+                0 0 15px white,
+                0 0 35px #8000ff,
+                0 0 60px #00ffff;
+        }
+
+        .disclaimer-box h2 {
+            margin-top: 0;
+            font-size: clamp(24px, 5vw, 40px);
+        }
+
+        .disclaimer-box p {
+            font-family: Arial, sans-serif;
+            font-size: 16px;
+            line-height: 1.5;
+        }
+
+        #start-music {
+            margin-top: 15px;
+            padding: 12px 24px;
+            color: white;
+            background: #111;
+            border: 2px solid white;
+            border-radius: 10px;
+            font-family: "Comic Sans MS", "Comic Sans", cursive;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow:
+                0 0 10px white,
+                0 0 25px #00ffff;
+        }
+
+        #start-music:hover {
+            background: #222;
+            box-shadow:
+                0 0 15px white,
+                0 0 35px #ff00ff,
+                0 0 55px #00ffff;
+        }
+
+        @keyframes rainbow {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            100% {
+                background-position: 400% 50%;
+            }
+        }
+
+        body::before {
+            content: "☠";
+            position: fixed;
+            top: 10px;
+            left: 20px;
+            font-size: 40px;
+            color: white;
+            opacity: 0.15;
+            animation: flicker 1s infinite;
+        }
+
+        body::after {
+            content: "☠";
+            position: fixed;
+            bottom: 10px;
+            right: 20px;
+            font-size: 40px;
+            color: white;
+            opacity: 0.15;
+            animation: flicker 0.7s infinite;
+        }
+
+        @keyframes flicker {
+            0%, 100% {
+                opacity: 0.05;
+            }
+
+            50% {
+                opacity: 0.25;
+            }
+        }
+
+        .footer {
+            position: fixed;
+            bottom: 10px;
+            left: 0;
+            width: 100%;
+            color: #777;
+            font-family: Arial, sans-serif;
+            font-size: 12px;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+
+    <audio id="music" loop>
+        <source src="pirate.ogg" type="audio/ogg">
+    </audio>
+
+    <div class="music-disclaimer" id="music-disclaimer">
+        <div class="disclaimer-box">
+            <h2>Music Disclaimer</h2>
+            <p>
+                This website is an unofficial, fan-made project and is not affiliated with, endorsed by, or owned by Toby Fox or any of his official companies, websites, or projects.
+            </p>
+            <button id="start-music" type="button">
+                I UNDERSTAND
+            </button>
+        </div>
+    </div>
+
+    <div class="container">
+
+        <img
+            class="gaster-image"
+            src="image.png"
+            alt="W.D. Gaster"
+        >
+
+        <div class="text">
+            w.d gaster is REAL<br>
+            and he wants you to play his game called deltarune
+        </div>
+
+        <a
+            class="link"
+            href="https://www.deltarune.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+        >
+            PLAY DELTARUNE
+        </a>
+
+    </div>
+
+    <div class="footer">
+        this website was made by camo. all rights of deltarune go to toby fox.
+    </div>
+
+    <script>
+        const music = document.getElementById("music");
+        const startMusicButton = document.getElementById("start-music");
+        const musicDisclaimer = document.getElementById("music-disclaimer");
+
+        music.volume = 0.5;
+
+        startMusicButton.addEventListener("click", () => {
+            music.play()
+                .then(() => {
+                    musicDisclaimer.style.display = "none";
+                })
+                .catch(() => {
+                    alert("The music could not be started. Please check that pirate.ogg is in the same folder as this HTML file.");
+                });
+        });
+    </script>
+
+</body>
+</html>
