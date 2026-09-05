@@ -1,272 +1,1483 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>W.D. Gaster is REAL</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Room Where the Eye Remembers</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;1,9..144,400&family=Work+Sans:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --void: #000000;
+    --indigo: #1a0f3d;
+    --magenta: #ff2fb0;
+    --cyan: #26ffe6;
+    --gold: #ffcc4d;
+    --fog: rgba(255,255,255,0.06);
+  }
 
-    <style>
-        html, body {
-            margin: 0;
-            min-height: 100%;
-        }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
 
-        body {
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            background: #050505;
-            color: white;
-            font-family: "Comic Sans MS", "Comic Sans", cursive;
-            text-align: center;
-            overflow: hidden;
-        }
+  html, body {
+    height: 100%;
+    background: var(--void);
+    overflow: hidden;
+    font-family: 'Work Sans', sans-serif;
+  }
 
-        .container {
-            max-width: 900px;
-            padding: 30px;
-            padding-bottom: 70px;
-        }
+  body {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 
-        .gaster-image {
-            max-width: 80vw;
-            max-height: 55vh;
-            display: block;
-            margin: 0 auto;
-            filter:
-                drop-shadow(0 0 10px white)
-                drop-shadow(0 0 25px #8000ff)
-                drop-shadow(0 0 45px #00ffff);
-        }
+  /* --- drifting surreal background --- */
+  .sky {
+    position: absolute;
+    inset: 0;
+    background: #000000;
+    animation: driftSky 40s ease-in-out infinite alternate;
+  }
 
-        .text {
-            margin-top: 30px;
-            font-size: clamp(24px, 4vw, 50px);
-            font-weight: bold;
-            background: linear-gradient(
-                90deg,
-                red,
-                orange,
-                yellow,
-                lime,
-                cyan,
-                blue,
-                violet,
-                red
-            );
-            background-size: 400% 100%;
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            animation: rainbow 3s linear infinite;
-            text-shadow: 0 0 5px rgba(255,255,255,0.5);
-        }
+  @keyframes driftSky {
+    0%   { transform: scale(1)   translate(0, 0); }
+    100% { transform: scale(1.15) translate(-2%, 3%); }
+  }
 
-        .link {
-            display: inline-block;
-            margin-top: 25px;
-            font-size: clamp(20px, 3vw, 35px);
-            font-weight: bold;
-            color: white;
-            text-decoration: none;
-            border: 3px solid white;
-            padding: 10px 25px;
-            border-radius: 12px;
-            box-shadow:
-                0 0 10px white,
-                0 0 25px #00ffff;
-            transition:
-                box-shadow 0.2s,
-                background 0.2s;
-        }
+  .grain {
+    position: absolute;
+    inset: 0;
+    opacity: 0.05;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    mix-blend-mode: overlay;
+  }
 
-        .link:hover {
-            box-shadow:
-                0 0 15px white,
-                0 0 40px #ff00ff,
-                0 0 70px #00ffff;
-            background: rgba(255, 255, 255, 0.08);
-        }
+  .motes { position: absolute; inset: 0; overflow: hidden; }
+  .mote {
+    position: absolute;
+    width: 3px; height: 3px;
+    border-radius: 50%;
+    background: var(--gold);
+    opacity: 0.5;
+    animation: float 14s linear infinite;
+  }
+  @keyframes float {
+    from { transform: translateY(110vh) translateX(0); opacity: 0; }
+    10%  { opacity: 0.6; }
+    90%  { opacity: 0.3; }
+    to   { transform: translateY(-10vh) translateX(30px); opacity: 0; }
+  }
 
-        .music-disclaimer {
-            position: fixed;
-            inset: 0;
-            z-index: 10;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            background: rgba(0, 0, 0, 0.9);
-        }
+  /* --- the orbit system --- */
+  .stage {
+    position: relative;
+    width: min(72vmin, 620px);
+    height: min(72vmin, 620px);
+  }
 
-        .disclaimer-box {
-            max-width: 500px;
-            padding: 30px;
-            border: 3px solid white;
-            border-radius: 15px;
-            background: #111;
-            box-shadow:
-                0 0 15px white,
-                0 0 35px #8000ff,
-                0 0 60px #00ffff;
-        }
+  .halo {
+    position: absolute;
+    inset: -6%;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255,47,176,0.20) 0%, rgba(38,255,230,0.10) 40%, transparent 72%);
+    filter: blur(18px);
+    animation: pulse 5s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { transform: scale(1);   opacity: 0.8; }
+    50%      { transform: scale(1.08); opacity: 1; }
+  }
 
-        .disclaimer-box h2 {
-            margin-top: 0;
-            font-size: clamp(24px, 5vw, 40px);
-        }
+  .center-wrap {
+    position: absolute;
+    top: 50%; left: 50%;
+    width: 30%; aspect-ratio: 1;
+    transform: translate(-50%, -50%);
+    z-index: 3;
+  }
 
-        .disclaimer-box p {
-            font-family: Arial, sans-serif;
-            font-size: 16px;
-            line-height: 1.5;
-        }
+  .center-glow {
+    position: absolute;
+    inset: -18%;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255,204,77,0.55), transparent 70%);
+    filter: blur(14px);
+    animation: pulse 4s ease-in-out infinite;
+  }
 
-        #start-music {
-            margin-top: 15px;
-            padding: 12px 24px;
-            color: white;
-            background: #111;
-            border: 2px solid white;
-            border-radius: 10px;
-            font-family: "Comic Sans MS", "Comic Sans", cursive;
-            font-size: 20px;
-            font-weight: bold;
-            cursor: pointer;
-            box-shadow:
-                0 0 10px white,
-                0 0 25px #00ffff;
-        }
+  .center-img {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    display: block;
+    box-shadow: 0 0 0 2px rgba(255,255,255,0.15), 0 20px 60px rgba(0,0,0,0.6);
+    filter: saturate(1.15) contrast(1.05);
+    will-change: transform;
+  }
 
-        #start-music:hover {
-            background: #222;
-            box-shadow:
-                0 0 15px white,
-                0 0 35px #ff00ff,
-                0 0 55px #00ffff;
-        }
+  .orbit-ring {
+    position: absolute;
+    inset: 0;
+    will-change: transform;
+  }
 
-        @keyframes rainbow {
-            0% {
-                background-position: 0% 50%;
-            }
+  .satellite {
+    position: absolute;
+    top: 50%; left: 50%;
+    width: 15%;
+    aspect-ratio: 1;
+    margin: -7.5% 0 0 -7.5%;
+  }
 
-            100% {
-                background-position: 400% 50%;
-            }
-        }
+  .satellite img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    display: block;
+    box-shadow: 0 0 0 2px rgba(255,255,255,0.12), 0 10px 30px rgba(0,0,0,0.5);
+    filter: hue-rotate(0deg) saturate(1.2);
+    will-change: transform;
+  }
 
-        body::before {
-            content: "☠";
-            position: fixed;
-            top: 10px;
-            left: 20px;
-            font-size: 40px;
-            color: white;
-            opacity: 0.15;
-            animation: flicker 1s infinite;
-        }
+  footer {
+    position: absolute;
+    bottom: 5%;
+    left: 50%;
+    transform: translateX(-50%);
+    color: rgba(255,255,255,0.3);
+    font-size: 0.72rem;
+    letter-spacing: 0.04em;
+    z-index: 5;
+  }
 
-        body::after {
-            content: "☠";
-            position: fixed;
-            bottom: 10px;
-            right: 20px;
-            font-size: 40px;
-            color: white;
-            opacity: 0.15;
-            animation: flicker 0.7s infinite;
-        }
+  /* --- collision + explosion --- */
+  .flash {
+    position: fixed;
+    inset: 0;
+    background: #fff;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 40;
+  }
+  .flash.go {
+    animation: flashPop 0.5s ease-out forwards;
+  }
+  @keyframes flashPop {
+    0%   { opacity: 0; background: #fff; }
+    8%   { opacity: 1; background: #fff; }
+    35%  { opacity: 0.9; background: #ffdca0; }
+    100% { opacity: 0; background: #3a0000; }
+  }
 
-        @keyframes flicker {
-            0%, 100% {
-                opacity: 0.05;
-            }
+  body.shake {
+    animation: shakeBody 0.55s cubic-bezier(.36,.07,.19,.97) both;
+  }
+  @keyframes shakeBody {
+    10%, 90% { transform: translate3d(-2px, 1px, 0); }
+    20%, 80% { transform: translate3d(4px, -2px, 0); }
+    30%, 50%, 70% { transform: translate3d(-8px, 3px, 0); }
+    40%, 60% { transform: translate3d(8px, -3px, 0); }
+  }
 
-            50% {
-                opacity: 0.25;
-            }
-        }
+  .explosion {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 20;
+    overflow: visible;
+  }
+  .shard {
+    position: absolute;
+    top: 50%; left: 50%;
+    width: var(--w);
+    height: var(--h);
+    background: var(--c);
+    box-shadow: 0 0 12px rgba(255,120,0,0.8);
+    opacity: 1;
+    transform: translate(-50%, -50%) rotate(0deg) translate(0px);
+    animation: shardFly var(--dur) cubic-bezier(.15,.7,.3,1) forwards;
+  }
+  @keyframes shardFly {
+    0%   { opacity: 1; transform: translate(-50%, -50%) rotate(0deg) translate(0px) scale(1); }
+    70%  { opacity: 1; }
+    100% { opacity: 0; transform: translate(-50%, -50%) rotate(var(--rot)) translate(var(--dist)) scale(0.2); }
+  }
 
-        .footer {
-            position: fixed;
-            bottom: 10px;
-            left: 0;
-            width: 100%;
-            color: #777;
-            font-family: Arial, sans-serif;
-            font-size: 12px;
-            text-align: center;
-        }
-    </style>
+  .dread {
+    position: fixed;
+    inset: 0;
+    z-index: 15;
+    pointer-events: none;
+    opacity: 0;
+    background: radial-gradient(circle at 50% 50%, transparent 0%, rgba(60,0,0,0.55) 60%, rgba(10,0,0,0.92) 100%);
+    transition: opacity 1.2s ease;
+  }
+  .dread.on {
+    opacity: 1;
+    animation: dreadPulse 3.2s ease-in-out infinite;
+  }
+  @keyframes dreadPulse {
+    0%, 100% { background-color: rgba(30,0,0,0); }
+    50%      { background-color: rgba(90,0,0,0.18); }
+  }
+
+  .finale {
+    position: absolute;
+    top: 50%; left: 50%;
+    width: min(94vmin, 1000px);
+    aspect-ratio: 1;
+    transform: translate(-50%, -50%) scale(0);
+    z-index: 25;
+    opacity: 0;
+    border-radius: 50%;
+    pointer-events: none;
+  }
+  .finale.reveal {
+    animation: finaleReveal 1.4s cubic-bezier(.2,.9,.25,1) forwards;
+  }
+  @keyframes finaleReveal {
+    0%   { transform: translate(-50%, -50%) scale(0);    opacity: 0; }
+    55%  { transform: translate(-50%, -50%) scale(1.12); opacity: 1; }
+    75%  { transform: translate(-50%, -50%) scale(0.96); opacity: 1; }
+    100% { transform: translate(-50%, -50%) scale(1);    opacity: 1; }
+  }
+
+  .finale-glow {
+    position: absolute;
+    inset: -10%;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(200,0,0,0.65), rgba(60,0,0,0.15) 55%, transparent 75%);
+    filter: blur(30px);
+    animation: pulse 1.8s ease-in-out infinite;
+  }
+
+  .finale-img {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    display: block;
+    filter: contrast(1.35) saturate(1.5) brightness(0.92) drop-shadow(0 0 60px rgba(255,0,0,0.6));
+    box-shadow: 0 0 0 3px rgba(255,0,0,0.4), inset 0 0 90px rgba(0,0,0,0.85);
+    animation: finaleLive 6s ease-in-out infinite, flicker 4s steps(1) infinite;
+  }
+  @keyframes finaleLive {
+    0%, 100% { transform: scale(1) rotate(0deg); }
+    50%      { transform: scale(1.045) rotate(0.6deg); }
+  }
+  @keyframes flicker {
+    0%, 92%, 100% { filter: contrast(1.35) saturate(1.5) brightness(0.92) drop-shadow(0 0 60px rgba(255,0,0,0.6)); }
+    93%           { filter: contrast(1.6) saturate(1.8) brightness(1.3) drop-shadow(0 0 90px rgba(255,0,0,0.9)); }
+    94%           { filter: contrast(1.1) saturate(1.1) brightness(0.6) drop-shadow(0 0 30px rgba(255,0,0,0.3)); }
+    95%           { filter: contrast(1.5) saturate(1.6) brightness(1.1) drop-shadow(0 0 70px rgba(255,0,0,0.7)); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+    }
+  }
+
+  /* --- content warning gate --- */
+  .warning-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #000000;
+    padding: 2rem;
+    transition: opacity 0.6s ease;
+  }
+  .warning-modal.hide {
+    opacity: 0;
+    pointer-events: none;
+  }
+  .warning-card {
+    max-width: 440px;
+    text-align: center;
+    color: #ff2a2a;
+    border: 1px solid rgba(255,0,0,0.45);
+    border-radius: 4px;
+    padding: 2.6rem 2.2rem;
+    background: linear-gradient(180deg, rgba(30,0,0,0.85), rgba(10,0,0,0.9));
+    box-shadow: 0 0 70px rgba(200,0,0,0.35), inset 0 0 40px rgba(120,0,0,0.3);
+    animation: dreadCard 3s ease-in-out infinite;
+  }
+  @keyframes dreadCard {
+    0%, 100% { box-shadow: 0 0 70px rgba(200,0,0,0.35), inset 0 0 40px rgba(120,0,0,0.3); }
+    50%      { box-shadow: 0 0 100px rgba(255,0,0,0.55), inset 0 0 60px rgba(160,0,0,0.4); }
+  }
+  .warning-card p {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-weight: 500;
+    font-size: 1.2rem;
+    line-height: 1.55;
+    letter-spacing: 0.01em;
+    color: #ff3535;
+    text-shadow: 0 0 18px rgba(255,0,0,0.6), 0 0 2px rgba(0,0,0,0.8);
+    margin-bottom: 1.8rem;
+  }
+  .warning-card button {
+    font-family: 'Work Sans', sans-serif;
+    font-size: 0.9rem;
+    letter-spacing: 0.02em;
+    color: #fff;
+    background: linear-gradient(90deg, #7a0000, #d40000);
+    border: 1px solid rgba(255,80,80,0.5);
+    border-radius: 4px;
+    padding: 0.7rem 1.8rem;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .warning-card button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 28px rgba(255,0,0,0.55);
+  }
+  .warning-card button:focus-visible {
+    outline: 2px solid #ff5a5a;
+    outline-offset: 3px;
+  }
+
+  /* --- heavenly reveal --- */
+  .heavenlight {
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(circle at 50% 50%, #ffffff 0%, #fff3d6 35%, #ffcc4d 60%, transparent 85%);
+    opacity: 0;
+    pointer-events: none;
+    z-index: 30;
+  }
+  .heavenlight.go {
+    animation: heavenPop 1.6s ease-out forwards;
+  }
+  @keyframes heavenPop {
+    0%   { opacity: 0; }
+    15%  { opacity: 1; }
+    55%  { opacity: 0.85; }
+    100% { opacity: 0; }
+  }
+
+  .heaven-bg {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 1;
+    opacity: 0;
+    transition: opacity 2.4s ease;
+  }
+  .heaven-bg.on { opacity: 1; }
+
+  body.heavenly .sky {
+    transition: opacity 2s ease;
+    opacity: 0.12;
+  }
+
+  /* --- staring contest game --- */
+  .stare-btn {
+    position: fixed;
+    bottom: 8%;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 50;
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: 1rem;
+    letter-spacing: 0.03em;
+    color: #ffdede;
+    background: linear-gradient(90deg, rgba(90,0,0,0.55), rgba(160,0,0,0.55));
+    border: 1px solid rgba(255,80,80,0.4);
+    border-radius: 4px;
+    padding: 0.7rem 1.8rem;
+    cursor: pointer;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 1.8s ease, transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 0 30px rgba(200,0,0,0.25);
+  }
+  .stare-btn.show {
+    opacity: 1;
+    pointer-events: auto;
+    animation: dreadCard 4s ease-in-out infinite;
+  }
+  .stare-btn:hover {
+    transform: translateX(-50%) translateY(-1px);
+    box-shadow: 0 6px 28px rgba(255,0,0,0.5);
+  }
+
+  .stare-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    background: #000;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1.4rem;
+  }
+  .stare-overlay.active { display: flex; }
+
+  /* heaven.png slowly gives way to hell.png as the stare approaches
+     its halfway point (~30s into the full 60s escalation) */
+  .stare-bg {
+    position: absolute;
+    inset: 0;
+    z-index: -2;
+    overflow: hidden;
+  }
+  .stare-bg-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: saturate(1.1) contrast(1.05);
+  }
+  .stare-bg-heaven { opacity: 1; }
+  .stare-bg-hell { opacity: 0; }
+
+  .stare-vignette {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background: radial-gradient(circle, rgba(25,0,0,0) 0%, rgba(0,0,0,1) 72%);
+  }
+
+  .stare-timer {
+    font-family: 'Fraunces', serif;
+    font-weight: 500;
+    font-size: 1.6rem;
+    color: #ff3535;
+    text-shadow: 0 0 18px rgba(255,0,0,0.5);
+    letter-spacing: 0.02em;
+  }
+
+  .stare-eye-wrap {
+    position: relative;
+    width: min(46vmin, 340px);
+    aspect-ratio: 1;
+    cursor: pointer;
+    user-select: none;
+    touch-action: none;
+  }
+  .stare-eye-glow {
+    position: absolute;
+    inset: -14%;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(200,0,0,0.5), transparent 70%);
+    filter: blur(24px);
+    animation: pulse 2.4s ease-in-out infinite;
+  }
+  .stare-eye-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    display: block;
+    filter: contrast(1.3) saturate(1.4) brightness(0.95);
+    box-shadow: 0 0 0 3px rgba(255,0,0,0.35), 0 0 60px rgba(255,0,0,0.4);
+  }
+  .stare-eye-wrap.holding .stare-eye-img {
+    /* Scale, contrast, and shake are now driven per-frame from JS as the
+       hold escalates, so no baseline animation is declared here. */
+  }
+
+  /* image1.png slowly rises out of image3.png over the same escalation
+     that turns heaven.png into hell.png behind it */
+  .stare-eye-img-shift {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .stare-explosion {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 3;
+    overflow: visible;
+  }
+
+  .stare-falling {
+    position: absolute;
+    top: -25%;
+    left: 50%;
+    width: min(20vmin, 150px);
+    aspect-ratio: 1;
+    transform: translateX(-50%);
+    border-radius: 50%;
+    object-fit: cover;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 2;
+    filter: contrast(1.2) saturate(1.3);
+  }
+
+  .stare-instructions {
+    font-family: 'Work Sans', sans-serif;
+    font-weight: 300;
+    font-size: 0.85rem;
+    letter-spacing: 0.03em;
+    color: rgba(255,255,255,0.45);
+    text-align: center;
+    max-width: 320px;
+  }
+
+  .stare-best {
+    font-family: 'Work Sans', sans-serif;
+    font-size: 0.75rem;
+    color: rgba(255,80,80,0.6);
+    letter-spacing: 0.02em;
+    min-height: 1em;
+  }
+
+  .stare-jumpscare {
+    position: fixed;
+    inset: 0;
+    z-index: 210;
+    display: none;
+    background: #000;
+  }
+  .stare-jumpscare.active { display: block; }
+  .stare-jumpscare img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: contrast(1.9) saturate(2.1) brightness(1.5);
+    animation: jumpZoom 0.35s ease-out forwards;
+  }
+  @keyframes jumpZoom {
+    0%   { transform: scale(0.75); }
+    100% { transform: scale(1.35); }
+  }
+
+  .stare-result {
+    position: absolute;
+    z-index: 220;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.2rem;
+    text-align: center;
+    max-width: 380px;
+    padding: 0 2rem;
+  }
+  .stare-result.active { display: flex; }
+  .stare-result p {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: 1.15rem;
+    line-height: 1.5;
+    color: #ff3535;
+    text-shadow: 0 0 18px rgba(255,0,0,0.5);
+  }
+  .stare-result-buttons {
+    display: flex;
+    gap: 1rem;
+  }
+  .stare-result button {
+    font-family: 'Work Sans', sans-serif;
+    font-size: 0.85rem;
+    color: #fff;
+    background: linear-gradient(90deg, #7a0000, #d40000);
+    border: 1px solid rgba(255,80,80,0.5);
+    border-radius: 4px;
+    padding: 0.6rem 1.5rem;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .stare-result button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 28px rgba(255,0,0,0.5);
+  }
+  .stare-result button.secondary {
+    background: linear-gradient(90deg, #1a1a1a, #333);
+    border-color: rgba(255,255,255,0.2);
+  }
+</style>
 </head>
-
 <body>
 
-    <audio id="music" loop>
-        <source src="pirate.ogg" type="audio/ogg">
-    </audio>
+  <div class="warning-modal" id="warningModal">
+    <div class="warning-card">
+      <p>The following material may be too disturbing for some viewers.</p>
+      <button id="understandBtn">I understand</button>
+    </div>
+  </div>
 
-    <div class="music-disclaimer" id="music-disclaimer">
-        <div class="disclaimer-box">
-            <h2>Music Disclaimer</h2>
-            <p>
-                This website is an unofficial, fan-made project and is not affiliated with, endorsed by, or owned by Toby Fox or any of his official companies, websites, or projects.
-            </p>
-            <button id="start-music" type="button">
-                I UNDERSTAND
-            </button>
-        </div>
+  <img class="heaven-bg" id="heavenBg" src="heaven.png" alt="" onerror="this.src=window.__fallbackHeaven">
+  <audio id="bgAudio" src="audio.mp3" preload="auto"></audio>
+  <audio id="stareAmbience" src="creepyambience.mp3" preload="auto" loop></audio>
+  <audio id="jumpscareAudio" src="jumpscare.mp3" preload="auto"></audio>
+  <audio id="jumpscareAudio" src="jumpscare.mp3" preload="auto"></audio>
+
+  <div class="sky"></div>
+  <div class="grain"></div>
+  <div class="motes" id="motes"></div>
+  <div class="dread" id="dread"></div>
+  <div class="flash" id="flash"></div>
+  <div class="heavenlight" id="heavenlight"></div>
+
+  <div class="stage" id="stage">
+    <div class="halo"></div>
+
+    <div class="explosion" id="explosion"></div>
+
+    <div class="orbit-ring">
+      <div class="satellite" style="transform: rotate(0deg) translate(220px) rotate(0deg);">
+        <img src="image2.png" alt="orbiting figure" onerror="this.src=window.__fallbackSat">
+      </div>
+      <div class="satellite" style="transform: rotate(72deg) translate(220px) rotate(-72deg);">
+        <img src="image2.png" alt="orbiting figure" onerror="this.src=window.__fallbackSat">
+      </div>
+      <div class="satellite" style="transform: rotate(144deg) translate(220px) rotate(-144deg);">
+        <img src="image2.png" alt="orbiting figure" onerror="this.src=window.__fallbackSat">
+      </div>
+      <div class="satellite" style="transform: rotate(216deg) translate(220px) rotate(-216deg);">
+        <img src="image2.png" alt="orbiting figure" onerror="this.src=window.__fallbackSat">
+      </div>
+      <div class="satellite" style="transform: rotate(288deg) translate(220px) rotate(-288deg);">
+        <img src="image2.png" alt="orbiting figure" onerror="this.src=window.__fallbackSat">
+      </div>
     </div>
 
-    <div class="container">
-
-        <img
-            class="gaster-image"
-            src="image.png"
-            alt="W.D. Gaster"
-        >
-
-        <div class="text">
-            w.d gaster is REAL<br>
-            and he wants you to play his game called deltarune
-        </div>
-
-        <a
-            class="link"
-            href="https://www.deltarune.com/"
-            target="_blank"
-            rel="noopener noreferrer"
-        >
-            PLAY DELTARUNE
-        </a>
-
+    <div class="center-wrap">
+      <div class="center-glow"></div>
+      <img class="center-img" src="image1.png" alt="center figure" onerror="this.src=window.__fallbackCenter">
     </div>
 
-    <div class="footer">
-        this website was made by camo. all rights of deltarune go to toby fox.
+    <div class="finale" id="finale">
+      <div class="finale-glow"></div>
+      <img class="finale-img" id="finaleImg" src="image3.png" alt="what remains" onerror="this.src=window.__fallbackFinale">
+    </div>
+  </div>
+
+  <button class="stare-btn" id="stareBtn" type="button">stare back</button>
+
+  <div class="stare-overlay" id="stareOverlay">
+    <div class="stare-bg" id="stareBg">
+      <img class="stare-bg-img stare-bg-heaven" id="stareBgHeaven" src="heaven.png" alt="" onerror="this.src=window.__fallbackHeaven">
+      <img class="stare-bg-img stare-bg-hell" id="stareBgHell" src="hell.png" alt="" onerror="this.src=window.__fallbackHell">
+    </div>
+    <div class="stare-vignette" id="stareVignette"></div>
+    <div class="stare-timer" id="stareTimer">0.0s</div>
+    <div class="stare-eye-wrap" id="stareEyeWrap">
+      <div class="stare-eye-glow"></div>
+      <img class="stare-eye-img" id="stareEyeImg" src="image3.png" alt="the eye" onerror="this.src=window.__fallbackFinale">
+      <img class="stare-eye-img stare-eye-img-shift" id="stareEyeImgShift" src="image1.png" alt="" onerror="this.src=window.__fallbackCenter">
+    </div>
+    <div class="stare-explosion" id="stareExplosion"></div>
+    <img class="stare-falling" id="stareFalling" src="image1.png" alt="" onerror="this.src=window.__fallbackCenter">
+    <p class="stare-instructions">Press and hold. Don't let go. Don't look away.</p>
+    <p class="stare-best" id="stareBest"></p>
+
+    <div class="stare-jumpscare" id="stareJumpscare">
+      <img id="stareJumpscareImg" src="image3.png" alt="" onerror="this.src=window.__fallbackFinale">
     </div>
 
-    <script>
-        const music = document.getElementById("music");
-        const startMusicButton = document.getElementById("start-music");
-        const musicDisclaimer = document.getElementById("music-disclaimer");
+    <div class="stare-result" id="stareResult">
+      <p id="stareResultText"></p>
+      <div class="stare-result-buttons">
+        <button id="stareRetryBtn" type="button">try again</button>
+        <button id="stareCloseBtn" type="button" class="secondary">leave</button>
+      </div>
+    </div>
+  </div>
 
-        music.volume = 0.5;
 
-        startMusicButton.addEventListener("click", () => {
-            music.play()
-                .then(() => {
-                    musicDisclaimer.style.display = "none";
-                })
-                .catch(() => {
-                    alert("The music could not be started. Please check that pirate.ogg is in the same folder as this HTML file.");
-                });
+  <script>
+    // Scale the orbit radius to the actual stage size instead of a fixed px value,
+    // so the circle stays proportional on any screen.
+    const stageEl = document.querySelector('.stage');
+    let baseRadius = stageEl.clientWidth * 0.355;
+    let radius = baseRadius;
+    function updateRadius() { baseRadius = stageEl.clientWidth * 0.355; }
+    window.addEventListener('resize', updateRadius);
+
+    const satellites = Array.from(document.querySelectorAll('.satellite'));
+    const satelliteImgs = satellites.map(s => s.querySelector('img'));
+    const centerImg = document.querySelector('.center-img');
+    const centerWrap = document.querySelector('.center-wrap');
+    const orbitRing = document.querySelector('.orbit-ring');
+    const flashEl = document.getElementById('flash');
+    const dreadEl = document.getElementById('dread');
+    const explosionEl = document.getElementById('explosion');
+    const finaleEl = document.getElementById('finale');
+    const heavenlightEl = document.getElementById('heavenlight');
+    const heavenBgEl = document.getElementById('heavenBg');
+    const bgAudio = document.getElementById('bgAudio');
+
+    // Base angular speeds (deg/sec) — each satellite spins at its own relative
+    // rate, everything scaled up together as time goes on.
+    const baseSatSpeed = [140, 165, 100, 190, 120];
+    const baseOrbitSpeed = 16;   // deg/sec for the whole ring circling the center
+    const baseCenterSpeed = 40;  // deg/sec for the center image spinning on itself
+
+    let centerAngle = 0;
+    let orbitAngle = 0;
+    const satAngle = satellites.map(() => 0);
+    const satOrbitOffset = [0, 72, 144, 216, 288];
+
+    // Phases: 'orbit' -> 'collapse' -> 'exploding' -> 'done'
+    let phase = 'orbit';
+    let collapseStart = 0;
+    const COLLAPSE_MS = 650;
+    const COLLISION_AT = 11; // seconds of accelerating spin before everything collides
+
+    let lastTime = performance.now();
+    let startTime = lastTime;
+
+    function triggerCollapse(now) {
+      phase = 'collapse';
+      collapseStart = now;
+    }
+
+    function triggerExplosion() {
+      phase = 'exploding';
+      centerWrap.style.opacity = '0';
+      orbitRing.style.opacity = '0';
+
+      stopAmbience(0.5);
+      playExplosionSound();
+
+      document.body.classList.add('shake');
+      setTimeout(() => document.body.classList.remove('shake'), 600);
+
+      flashEl.classList.add('go');
+
+      spawnShards();
+
+      setTimeout(() => {
+        dreadEl.classList.add('on');
+        finaleEl.classList.add('reveal');
+        heavenlightEl.classList.add('go');
+        phase = 'done';
+
+        // Once the heavenly light has washed over and faded, settle into
+        // the heaven backdrop and start the audio.
+        setTimeout(() => {
+          document.body.classList.add('heavenly');
+          heavenBgEl.classList.add('on');
+          bgAudio.currentTime = 0;
+          bgAudio.play().catch(() => {});
+
+          // Give the calm a moment to settle before offering the game.
+          setTimeout(() => stareBtn.classList.add('show'), 3000);
+        }, 1600);
+      }, 550);
+    }
+
+    function spawnShards() {
+      const colors = ['#ff5a1f', '#ffcc4d', '#ff2fb0', '#fff1c9', '#a30f0f'];
+      const count = 36;
+      for (let i = 0; i < count; i++) {
+        const shard = document.createElement('div');
+        shard.className = 'shard';
+        const angle = Math.random() * 360;
+        const dist = 260 + Math.random() * 420;
+        const dur = 0.6 + Math.random() * 0.7;
+        const w = 6 + Math.random() * 22;
+        const h = 6 + Math.random() * 22;
+        const rot = (Math.random() > 0.5 ? 1 : -1) * (360 + Math.random() * 720);
+        shard.style.setProperty('--w', w + 'px');
+        shard.style.setProperty('--h', h + 'px');
+        shard.style.setProperty('--c', colors[i % colors.length]);
+        shard.style.setProperty('--dur', dur + 's');
+        shard.style.setProperty('--rot', rot + 'deg');
+        const rad = angle * Math.PI / 180;
+        const dx = Math.cos(rad) * dist;
+        const dy = Math.sin(rad) * dist;
+        shard.style.setProperty('--dist', `${dx}px, ${dy}px`);
+        explosionEl.appendChild(shard);
+        setTimeout(() => shard.remove(), (dur + 0.2) * 1000);
+      }
+    }
+
+    function tick(now) {
+      const dt = Math.min((now - lastTime) / 1000, 0.05); // seconds, clamped
+      lastTime = now;
+      const elapsed = (now - startTime) / 1000; // seconds since load
+
+      if (phase === 'orbit') {
+        // Growth factor climbs every second and has no ceiling — speeds keep
+        // building toward "infinitely fast" until the moment everything collides.
+        const growth = 1 + elapsed * elapsed * 0.06;
+
+        centerAngle = (centerAngle + baseCenterSpeed * growth * dt) % 360;
+        orbitAngle = (orbitAngle + baseOrbitSpeed * growth * dt) % 360;
+
+        centerImg.style.transform = `rotate(${centerAngle}deg)`;
+        orbitRing.style.transform = `rotate(${orbitAngle}deg)`;
+
+        satellites.forEach((sat, i) => {
+          satAngle[i] = (satAngle[i] + baseSatSpeed[i] * growth * dt) % 360;
+          const offset = satOrbitOffset[i];
+          sat.style.transform = `rotate(${offset}deg) translate(${radius}px) rotate(${-offset}deg)`;
+          satelliteImgs[i].style.transform = `rotate(${satAngle[i]}deg)`;
         });
-    </script>
+
+        if (elapsed >= COLLISION_AT) {
+          triggerCollapse(now);
+        }
+      } else if (phase === 'collapse') {
+        // Spiral inward fast while still spinning at top speed, then collide.
+        const progress = Math.min((now - collapseStart) / COLLAPSE_MS, 1);
+        const growth = 1 + COLLISION_AT * COLLISION_AT * 0.06 * (1 + progress * 3);
+        radius = baseRadius * (1 - progress);
+
+        centerAngle = (centerAngle + baseCenterSpeed * growth * dt) % 360;
+        orbitAngle = (orbitAngle + baseOrbitSpeed * growth * dt) % 360;
+        centerImg.style.transform = `rotate(${centerAngle}deg) scale(${1 + progress * 0.3})`;
+        orbitRing.style.transform = `rotate(${orbitAngle}deg)`;
+
+        satellites.forEach((sat, i) => {
+          satAngle[i] = (satAngle[i] + baseSatSpeed[i] * growth * dt) % 360;
+          const offset = satOrbitOffset[i];
+          sat.style.transform = `rotate(${offset}deg) translate(${radius}px) rotate(${-offset}deg)`;
+          satelliteImgs[i].style.transform = `rotate(${satAngle[i]}deg) scale(${1 + progress * 0.3})`;
+        });
+
+        if (progress >= 1) {
+          triggerExplosion();
+        }
+      }
+      // 'exploding' and 'done' phases need no per-frame transform updates —
+      // CSS animations take over for the flash, shards, and finale reveal.
+
+      requestAnimationFrame(tick);
+    }
+
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    function spawnMotes() {
+      const motesEl = document.getElementById('motes');
+      for (let i = 0; i < 24; i++) {
+        const m = document.createElement('div');
+        m.className = 'mote';
+        m.style.left = Math.random() * 100 + 'vw';
+        m.style.animationDelay = (Math.random() * 14) + 's';
+        m.style.animationDuration = (10 + Math.random() * 10) + 's';
+        const colors = ['#ffcc4d', '#26ffe6', '#ff2fb0'];
+        m.style.background = colors[i % colors.length];
+        motesEl.appendChild(m);
+      }
+    }
+
+    function startExperience() {
+      spawnMotes();
+      startAmbience();
+      if (!reduceMotion) {
+        lastTime = performance.now();
+        startTime = lastTime;
+        requestAnimationFrame(tick);
+      } else {
+        satellites.forEach((sat, i) => {
+          const offset = satOrbitOffset[i];
+          sat.style.transform = `rotate(${offset}deg) translate(${radius}px) rotate(${-offset}deg)`;
+        });
+      }
+    }
+
+    // --- disturbing ambience, synthesized so no audio file is required ---
+    // A low dissonant drone plus a bed of filtered noise, both slowly rising
+    // in volume and pitch as the spinning accelerates, cut off with a fast
+    // fade the instant everything collides.
+    let audioCtx = null;
+    let ambienceNodes = null;
+
+    function startAmbience() {
+      if (reduceMotion) return; // don't add unsettling sound for reduced-motion visitors
+      try {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const master = audioCtx.createGain();
+        master.gain.value = 0;
+        master.connect(audioCtx.destination);
+
+        // Two closely detuned low tones for a dissonant, uneasy beating.
+        const osc1 = audioCtx.createOscillator();
+        osc1.type = 'sine';
+        osc1.frequency.value = 54;
+        const osc2 = audioCtx.createOscillator();
+        osc2.type = 'sawtooth';
+        osc2.frequency.value = 57.5;
+        const oscGain = audioCtx.createGain();
+        oscGain.gain.value = 0.5;
+        osc1.connect(oscGain);
+        osc2.connect(oscGain);
+        oscGain.connect(master);
+
+        // A slow LFO tremolo on the tones for a breathing, uneven pulse.
+        const lfo = audioCtx.createOscillator();
+        lfo.type = 'sine';
+        lfo.frequency.value = 0.18;
+        const lfoGain = audioCtx.createGain();
+        lfoGain.gain.value = 0.25;
+        lfo.connect(lfoGain);
+        lfoGain.connect(oscGain.gain);
+
+        // Filtered noise bed underneath, for a cold, hollow rumble.
+        const bufferSize = audioCtx.sampleRate * 2;
+        const noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+        const data = noiseBuffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+        const noise = audioCtx.createBufferSource();
+        noise.buffer = noiseBuffer;
+        noise.loop = true;
+        const noiseFilter = audioCtx.createBiquadFilter();
+        noiseFilter.type = 'lowpass';
+        noiseFilter.frequency.value = 220;
+        const noiseGain = audioCtx.createGain();
+        noiseGain.gain.value = 0.35;
+        noise.connect(noiseFilter);
+        noiseFilter.connect(noiseGain);
+        noiseGain.connect(master);
+
+        const now = audioCtx.currentTime;
+        osc1.start(now);
+        osc2.start(now);
+        lfo.start(now);
+        noise.start(now);
+
+        // Fade in, then keep climbing in pitch and intensity to match the
+        // accelerating visuals, mirroring the same run-up to the collision.
+        master.gain.linearRampToValueAtTime(0.22, now + 2.5);
+        osc1.frequency.linearRampToValueAtTime(70, now + COLLISION_AT + COLLAPSE_MS / 1000);
+        osc2.frequency.linearRampToValueAtTime(78, now + COLLISION_AT + COLLAPSE_MS / 1000);
+        noiseFilter.frequency.linearRampToValueAtTime(900, now + COLLISION_AT + COLLAPSE_MS / 1000);
+        lfo.frequency.linearRampToValueAtTime(2.2, now + COLLISION_AT + COLLAPSE_MS / 1000);
+
+        ambienceNodes = { master, osc1, osc2, lfo, noise };
+      } catch (e) {
+        // Web Audio unavailable — silently skip the ambience.
+      }
+    }
+
+    function stopAmbience(fadeSeconds) {
+      if (!audioCtx || !ambienceNodes) return;
+      const now = audioCtx.currentTime;
+      ambienceNodes.master.gain.cancelScheduledValues(now);
+      ambienceNodes.master.gain.setValueAtTime(ambienceNodes.master.gain.value, now);
+      ambienceNodes.master.gain.linearRampToValueAtTime(0, now + fadeSeconds);
+      const nodesToStop = [ambienceNodes.osc1, ambienceNodes.osc2, ambienceNodes.lfo, ambienceNodes.noise];
+      setTimeout(() => {
+        nodesToStop.forEach(n => { try { n.stop(); } catch (e) {} });
+        audioCtx.close().catch(() => {});
+      }, fadeSeconds * 1000 + 100);
+      ambienceNodes = null;
+    }
+
+    // A one-shot synthesized explosion: a fast low-frequency boom sweep
+    // layered under a sharp decaying noise crack. No audio file required.
+    function playExplosionSound() {
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const now = ctx.currentTime;
+        const master = ctx.createGain();
+        master.gain.value = 0.9;
+        master.connect(ctx.destination);
+
+        // Low boom, pitch sweeping sharply downward.
+        const boom = ctx.createOscillator();
+        boom.type = 'sine';
+        boom.frequency.setValueAtTime(180, now);
+        boom.frequency.exponentialRampToValueAtTime(28, now + 0.55);
+        const boomGain = ctx.createGain();
+        boomGain.gain.setValueAtTime(0.0001, now);
+        boomGain.gain.exponentialRampToValueAtTime(1, now + 0.02);
+        boomGain.gain.exponentialRampToValueAtTime(0.0001, now + 1.1);
+        boom.connect(boomGain);
+        boomGain.connect(master);
+        boom.start(now);
+        boom.stop(now + 1.2);
+
+        // Sharp decaying noise crack for the initial impact.
+        const bufferSize = Math.floor(ctx.sampleRate * 0.7);
+        const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+        const data = buffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) {
+          data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / bufferSize, 2.2);
+        }
+        const noise = ctx.createBufferSource();
+        noise.buffer = buffer;
+        const noiseFilter = ctx.createBiquadFilter();
+        noiseFilter.type = 'lowpass';
+        noiseFilter.frequency.setValueAtTime(5000, now);
+        noiseFilter.frequency.exponentialRampToValueAtTime(250, now + 0.6);
+        const noiseGain = ctx.createGain();
+        noiseGain.gain.setValueAtTime(0.7, now);
+        noise.connect(noiseFilter);
+        noiseFilter.connect(noiseGain);
+        noiseGain.connect(master);
+        noise.start(now);
+
+        setTimeout(() => ctx.close().catch(() => {}), 1400);
+      } catch (e) {
+        // Web Audio unavailable — silently skip the explosion sound.
+      }
+    }
+
+    const warningModal = document.getElementById('warningModal');
+    document.getElementById('understandBtn').addEventListener('click', () => {
+      // Unlock audio playback on this user gesture so the later, unattended
+      // bgAudio.play() call during the finale isn't blocked by autoplay rules.
+      bgAudio.play().then(() => { bgAudio.pause(); bgAudio.currentTime = 0; }).catch(() => {});
+
+      warningModal.classList.add('hide');
+      setTimeout(() => warningModal.remove(), 650);
+      startExperience();
+    });
+
+    // --- staring contest game ---
+    // Hold the eye. Let go, look away, or leave the tab, and it "sees" you.
+    // The longer you hold, the worse it gets: creeping visual distortion,
+    // a low ambience that fades in, small things starting to come apart
+    // after 30s, and total collapse — followed by a refresh — at 60s.
+    const stareBtn = document.getElementById('stareBtn');
+    const stareOverlay = document.getElementById('stareOverlay');
+    const stareBgHeaven = document.getElementById('stareBgHeaven');
+    const stareBgHell = document.getElementById('stareBgHell');
+    const stareVignette = document.getElementById('stareVignette');
+    const stareEyeWrap = document.getElementById('stareEyeWrap');
+    const stareEyeImg = document.getElementById('stareEyeImg');
+    const stareEyeImgShift = document.getElementById('stareEyeImgShift');
+    const stareExplosionEl = document.getElementById('stareExplosion');
+    const stareFallingEl = document.getElementById('stareFalling');
+    const stareTimerEl = document.getElementById('stareTimer');
+    const stareBestEl = document.getElementById('stareBest');
+    const stareJumpscare = document.getElementById('stareJumpscare');
+    const stareResult = document.getElementById('stareResult');
+    const stareResultText = document.getElementById('stareResultText');
+    const stareRetryBtn = document.getElementById('stareRetryBtn');
+    const stareCloseBtn = document.getElementById('stareCloseBtn');
+    const stareAmbienceAudio = document.getElementById('stareAmbience');
+    const jumpscareAudio = document.getElementById('jumpscareAudio');
+
+    let stareActive = false;
+    let stareStartTime = 0;
+    let stareRAF = null;
+    let stareFlickerTimeout = null;
+    let stareExplodeTimeout = null;
+    let stareFlickerUntil = 0;
+    let stareAmbienceStarted = false;
+    let stareSlowExplosionStarted = false;
+    let stareFinalTriggered = false;
+    let stareBestTime = parseFloat(localStorage.getItem('stareBestTime') || '0');
+
+    function playJumpscareSound() {
+      try {
+        jumpscareAudio.currentTime = 0;
+        jumpscareAudio.play().catch(() => {});
+      } catch (e) {
+        // Audio unavailable — silently skip.
+      }
+    }
+
+    function stopHeavenAmbienceIfPlaying() {
+      if (!bgAudio.paused) {
+        bgAudio.pause();
+      }
+    }
+
+    function applyStareEscalation(elapsed) {
+      // dread climbs from 0 to 1 across the full minute, driving every
+      // creepy effect together so they build in lockstep.
+      const dread = Math.min(elapsed / 60, 1);
+      const flickering = performance.now() < stareFlickerUntil;
+
+      const scale = 1 + dread * 0.28 + Math.sin(elapsed * 2) * 0.015 + (flickering ? 0.08 : 0);
+      const contrast = 1.3 + dread * 0.9 + (flickering ? 0.7 : 0);
+      const saturate = 1.4 + dread * 0.7 + (flickering ? 0.4 : 0);
+      const brightness = 0.95 - dread * 0.22 + (flickering ? 0.55 : 0);
+      stareEyeImg.style.transform = `scale(${scale})`;
+      stareEyeImg.style.filter = `contrast(${contrast}) saturate(${saturate}) brightness(${brightness})`;
+      stareEyeImgShift.style.transform = `scale(${scale})`;
+      stareEyeImgShift.style.filter = `contrast(${contrast}) saturate(${saturate}) brightness(${brightness})`;
+
+      // heaven.png -> hell.png and image3.png -> image1.png both complete
+      // their crossfade by the halfway point (dread 0.5, ~30s in), then hold.
+      const shift = Math.min(dread / 0.5, 1);
+      stareBgHell.style.opacity = shift;
+      stareEyeImgShift.style.opacity = shift;
+
+      // The dark closes in around the eye the longer you hold.
+      stareVignette.style.background =
+        `radial-gradient(circle, rgba(25,0,0,${dread * 0.55}) 0%, rgba(0,0,0,1) ${72 - dread * 32}%)`;
+
+      // A faint tremor once things start to feel unstable, worsening from there.
+      if (dread > 0.15) {
+        const jitter = (dread - 0.15) * 9;
+        const jx = (Math.random() - 0.5) * jitter;
+        const jy = (Math.random() - 0.5) * jitter;
+        stareEyeWrap.style.transform = `translate(${jx}px, ${jy}px)`;
+      }
+
+      stareTimerEl.style.textShadow = `0 0 ${18 + dread * 40}px rgba(255,0,0,${0.5 + dread * 0.5})`;
+
+      stareFallingEl.style.top = `${-25 + dread * 95}%`;
+      stareFallingEl.style.opacity = Math.min(dread * 2, 1);
+    }
+
+    function updateStareTimer() {
+      if (!stareActive) return;
+      const elapsed = (performance.now() - stareStartTime) / 1000;
+      stareTimerEl.textContent = elapsed.toFixed(1) + 's';
+      applyStareEscalation(elapsed);
+
+      if (elapsed >= 5 && !stareAmbienceStarted) {
+        stareAmbienceStarted = true;
+        startStareAmbienceFade();
+      }
+      if (elapsed >= 30 && !stareSlowExplosionStarted) {
+        stareSlowExplosionStarted = true;
+        scheduleStareShard();
+      }
+      if (elapsed >= 60 && !stareFinalTriggered) {
+        stareFinalTriggered = true;
+        triggerStareFinalExplosion();
+        return;
+      }
+
+      stareRAF = requestAnimationFrame(updateStareTimer);
+    }
+
+    // Ambience starts a few seconds in and fades up slowly rather than
+    // snapping to full volume.
+    function startStareAmbienceFade() {
+      stareAmbienceAudio.volume = 0;
+      stareAmbienceAudio.currentTime = 0;
+      stareAmbienceAudio.play().catch(() => {});
+      const fadeStart = performance.now();
+      const fadeMs = 7000;
+      (function fadeStep() {
+        if (!stareActive) return;
+        const t = Math.min((performance.now() - fadeStart) / fadeMs, 1);
+        stareAmbienceAudio.volume = t * 0.6;
+        if (t < 1) requestAnimationFrame(fadeStep);
+      })();
+    }
+
+    // Flicker frequency tightens the longer you've been holding.
+    function scheduleStareFlicker() {
+      const elapsed = (performance.now() - stareStartTime) / 1000;
+      const base = Math.max(1500 - elapsed * 18, 300);
+      const delay = base + Math.random() * base;
+      stareFlickerTimeout = setTimeout(() => {
+        if (!stareActive) return;
+        stareFlickerUntil = performance.now() + 120 + Math.random() * 100;
+        if (elapsed > 15) {
+          document.body.classList.add('shake');
+          setTimeout(() => document.body.classList.remove('shake'), 500);
+        }
+        scheduleStareFlicker();
+      }, delay);
+    }
+
+    // From 30s to 60s, small shards start drifting off the eye, getting
+    // bigger, faster, and more frequent as the minute runs out.
+    function spawnStareShard(elapsed) {
+      const progress = Math.min(Math.max((elapsed - 30) / 30, 0), 1);
+      const colors = ['#ff5a1f', '#ffcc4d', '#ff2fb0', '#a30f0f'];
+      const shard = document.createElement('div');
+      shard.className = 'shard';
+      const angle = Math.random() * 360;
+      const dist = 60 + progress * 260 + Math.random() * 80;
+      const dur = 0.9 - progress * 0.4 + Math.random() * 0.3;
+      const size = 4 + progress * 14 + Math.random() * 8;
+      const rot = (Math.random() > 0.5 ? 1 : -1) * (180 + Math.random() * 360);
+      shard.style.setProperty('--w', size + 'px');
+      shard.style.setProperty('--h', size + 'px');
+      shard.style.setProperty('--c', colors[Math.floor(Math.random() * colors.length)]);
+      shard.style.setProperty('--dur', dur + 's');
+      shard.style.setProperty('--rot', rot + 'deg');
+      const rad = angle * Math.PI / 180;
+      const dx = Math.cos(rad) * dist;
+      const dy = Math.sin(rad) * dist;
+      shard.style.setProperty('--dist', `${dx}px, ${dy}px`);
+      stareExplosionEl.appendChild(shard);
+      setTimeout(() => shard.remove(), (dur + 0.2) * 1000);
+    }
+
+    function scheduleStareShard() {
+      if (!stareActive) return;
+      const elapsed = (performance.now() - stareStartTime) / 1000;
+      if (elapsed >= 60) return;
+      spawnStareShard(elapsed);
+      const progress = Math.min((elapsed - 30) / 30, 1);
+      const delay = 700 - progress * 500;
+      stareExplodeTimeout = setTimeout(scheduleStareShard, Math.max(delay, 150));
+    }
+
+    function stareMoveCheck(e) {
+      if (!stareActive) return;
+      const rect = stareEyeWrap.getBoundingClientRect();
+      const cx = rect.left + rect.width / 2;
+      const cy = rect.top + rect.height / 2;
+      const point = e.touches ? e.touches[0] : e;
+      const dist = Math.hypot(point.clientX - cx, point.clientY - cy);
+      if (dist > rect.width * 1.3) endStareLose();
+    }
+
+    // Shared teardown for the timers, listeners, and visual/audio state
+    // that build up over a hold — used whether the round ends in a loss,
+    // a full collapse, or the player just backs out.
+    function stareCleanupTimers() {
+      cancelAnimationFrame(stareRAF);
+      clearTimeout(stareFlickerTimeout);
+      clearTimeout(stareExplodeTimeout);
+      window.removeEventListener('mouseup', endStareLose);
+      window.removeEventListener('touchend', endStareLose);
+      window.removeEventListener('blur', endStareLose);
+      window.removeEventListener('mousemove', stareMoveCheck);
+      window.removeEventListener('touchmove', stareMoveCheck);
+      stareAmbienceAudio.pause();
+      stareAmbienceAudio.currentTime = 0;
+      stareAmbienceAudio.volume = 0;
+      stareAmbienceStarted = false;
+      stareSlowExplosionStarted = false;
+      stareFinalTriggered = false;
+      stareFlickerUntil = 0;
+      stareEyeWrap.classList.remove('holding');
+      stareEyeWrap.style.transform = '';
+      stareEyeImg.style.transform = '';
+      stareEyeImg.style.filter = '';
+      stareEyeImgShift.style.transform = '';
+      stareEyeImgShift.style.filter = '';
+      stareEyeImgShift.style.opacity = '';
+      stareBgHell.style.opacity = '';
+      stareVignette.style.background = '';
+      stareExplosionEl.innerHTML = '';
+      stareFallingEl.style.top = '';
+      stareFallingEl.style.opacity = '';
+    }
+
+    function openStareGame() {
+      stareCleanupTimers();
+      stareActive = false;
+      stareOverlay.classList.add('active');
+      stareResult.classList.remove('active');
+      stareJumpscare.classList.remove('active');
+      stareTimerEl.textContent = '0.0s';
+      stareBestEl.textContent = stareBestTime > 0 ? `longest so far: ${stareBestTime.toFixed(1)}s` : '';
+    }
+
+    function startStare(e) {
+      e.preventDefault();
+      if (stareActive) return;
+      stareActive = true;
+      stareStartTime = performance.now();
+      stareEyeWrap.classList.add('holding');
+      stareRAF = requestAnimationFrame(updateStareTimer);
+      scheduleStareFlicker();
+      window.addEventListener('mouseup', endStareLose);
+      window.addEventListener('touchend', endStareLose);
+      window.addEventListener('blur', endStareLose);
+      window.addEventListener('mousemove', stareMoveCheck);
+      window.addEventListener('touchmove', stareMoveCheck, { passive: true });
+    }
+
+    function endStareLose() {
+      if (!stareActive) return;
+      stareActive = false;
+      const survived = (performance.now() - stareStartTime) / 1000;
+      stareCleanupTimers();
+      triggerStareJumpscare(survived);
+    }
+
+    function triggerStareJumpscare(survived) {
+      stopHeavenAmbienceIfPlaying();
+      playJumpscareSound();
+      document.body.classList.add('shake');
+      setTimeout(() => document.body.classList.remove('shake'), 600);
+      stareJumpscare.classList.add('active');
+
+      const isBest = survived > stareBestTime;
+      if (isBest) {
+        stareBestTime = survived;
+        localStorage.setItem('stareBestTime', String(survived));
+      }
+
+      setTimeout(() => {
+        stareJumpscare.classList.remove('active');
+        stareResultText.textContent = isBest
+          ? `It saw you after ${survived.toFixed(1)}s. That's a new longest.`
+          : `It saw you after ${survived.toFixed(1)}s. Longest so far: ${stareBestTime.toFixed(1)}s.`;
+        stareResult.classList.add('active');
+      }, 850);
+    }
+
+    // A full minute of holding on: everything comes apart at once, then
+    // the page reloads to a clean slate.
+    function triggerStareFinalExplosion() {
+      stareActive = false;
+      stareCleanupTimers();
+      stopHeavenAmbienceIfPlaying();
+
+      playJumpscareSound();
+      document.body.classList.add('shake');
+      for (let i = 0; i < 14; i++) {
+        setTimeout(() => spawnStareShard(60), i * 30);
+      }
+      stareJumpscare.classList.add('active');
+
+      setTimeout(() => location.reload(), 1400);
+    }
+
+    function closeStareGame() {
+      stareActive = false;
+      stareCleanupTimers();
+      stopHeavenAmbienceIfPlaying();
+      stareOverlay.classList.remove('active');
+    }
+
+    stareBtn.addEventListener('click', openStareGame);
+    stareEyeWrap.addEventListener('mousedown', startStare);
+    stareEyeWrap.addEventListener('touchstart', startStare, { passive: false });
+    stareRetryBtn.addEventListener('click', openStareGame);
+    stareCloseBtn.addEventListener('click', closeStareGame);
+
+    // Inline surreal placeholder art, used only if the real images aren't found yet.
+    window.__fallbackCenter = "data:image/svg+xml," + encodeURIComponent(`
+      <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'>
+        <defs>
+          <radialGradient id='g1' cx='50%' cy='40%' r='70%'>
+            <stop offset='0%' stop-color='#fff3d6'/>
+            <stop offset='45%' stop-color='#ff2fb0'/>
+            <stop offset='100%' stop-color='#1a0f3d'/>
+          </radialGradient>
+        </defs>
+        <rect width='200' height='200' fill='url(#g1)'/>
+        <ellipse cx='100' cy='100' rx='70' ry='40' fill='#08050f'/>
+        <circle cx='100' cy='100' r='24' fill='#26ffe6'/>
+        <circle cx='100' cy='100' r='10' fill='#08050f'/>
+        <circle cx='108' cy='92' r='4' fill='#fff'/>
+      </svg>
+    `);
+
+    window.__fallbackSat = "data:image/svg+xml," + encodeURIComponent(`
+      <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'>
+        <defs>
+          <radialGradient id='g2' cx='50%' cy='50%' r='70%'>
+            <stop offset='0%' stop-color='#26ffe6'/>
+            <stop offset='60%' stop-color='#5b2fd6'/>
+            <stop offset='100%' stop-color='#08050f'/>
+          </radialGradient>
+        </defs>
+        <rect width='200' height='200' fill='url(#g2)'/>
+        <path d='M30 130 Q100 40 170 130 Q100 170 30 130 Z' fill='#08050f' opacity='0.6'/>
+        <circle cx='100' cy='120' r='14' fill='#ffcc4d'/>
+      </svg>
+    `);
+
+    // Ominous fallback for image3.png — an abstract, jagged, red-eyed shape,
+    // used only until the real image3.png is placed next to this file.
+    window.__fallbackFinale = "data:image/svg+xml," + encodeURIComponent(`
+      <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 400'>
+        <defs>
+          <radialGradient id='bg' cx='50%' cy='42%' r='65%'>
+            <stop offset='0%' stop-color='#3a0000'/>
+            <stop offset='55%' stop-color='#150000'/>
+            <stop offset='100%' stop-color='#000'/>
+          </radialGradient>
+          <radialGradient id='eye' cx='50%' cy='50%' r='50%'>
+            <stop offset='0%' stop-color='#fff3d6'/>
+            <stop offset='30%' stop-color='#ff2200'/>
+            <stop offset='100%' stop-color='#3a0000'/>
+          </radialGradient>
+          <filter id='rough'>
+            <feTurbulence type='turbulence' baseFrequency='0.012' numOctaves='3' seed='7' result='n'/>
+            <feDisplacementMap in='SourceGraphic' in2='n' scale='26'/>
+          </filter>
+        </defs>
+        <rect width='400' height='400' fill='url(#bg)'/>
+        <g filter='url(#rough)'>
+          <path d='M40 260 L120 60 L200 220 L280 40 L360 260 L200 380 Z' fill='#0a0000' stroke='#8a0000' stroke-width='3'/>
+          <path d='M60 300 Q200 250 340 300 L340 340 Q200 300 60 340 Z' fill='#1a0000'/>
+        </g>
+        <circle cx='200' cy='190' r='58' fill='url(#eye)'/>
+        <ellipse cx='200' cy='190' rx='14' ry='40' fill='#0a0000'/>
+        <path d='M120 130 Q200 90 280 130' stroke='#ff2200' stroke-width='4' fill='none' opacity='0.7' filter='url(#rough)'/>
+      </svg>
+    `);
+
+    // Fallback heaven backdrop — soft golden sky with cloud banks and light
+    // rays, used only until the real heaven.png is placed next to this file.
+    window.__fallbackHeaven = "data:image/svg+xml," + encodeURIComponent(`
+      <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 500' preserveAspectRatio='xMidYMid slice'>
+        <defs>
+          <radialGradient id='hsky' cx='50%' cy='30%' r='80%'>
+            <stop offset='0%' stop-color='#fffdf0'/>
+            <stop offset='35%' stop-color='#ffe9b0'/>
+            <stop offset='70%' stop-color='#ffcf7a'/>
+            <stop offset='100%' stop-color='#f2b25c'/>
+          </radialGradient>
+          <linearGradient id='ray' x1='0' y1='0' x2='0' y2='1'>
+            <stop offset='0%' stop-color='#fff8e0' stop-opacity='0.9'/>
+            <stop offset='100%' stop-color='#fff8e0' stop-opacity='0'/>
+          </linearGradient>
+        </defs>
+        <rect width='800' height='500' fill='url(#hsky)'/>
+        <g opacity='0.8'>
+          <polygon points='400,0 340,500 460,500' fill='url(#ray)'/>
+          <polygon points='250,0 190,500 310,500' fill='url(#ray)' opacity='0.6'/>
+          <polygon points='550,0 490,500 610,500' fill='url(#ray)' opacity='0.6'/>
+        </g>
+        <g fill='#ffffff' opacity='0.85'>
+          <ellipse cx='150' cy='380' rx='140' ry='40'/>
+          <ellipse cx='230' cy='360' rx='100' ry='34'/>
+          <ellipse cx='620' cy='400' rx='160' ry='42'/>
+          <ellipse cx='540' cy='420' rx='110' ry='30'/>
+          <ellipse cx='400' cy='460' rx='220' ry='36'/>
+        </g>
+      </svg>
+    `);
+
+    // Fallback hell backdrop — churning red-black sky with jagged rock
+    // silhouettes, used only until the real hell.png is placed next to
+    // this file.
+    window.__fallbackHell = "data:image/svg+xml," + encodeURIComponent(`
+      <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 500' preserveAspectRatio='xMidYMid slice'>
+        <defs>
+          <radialGradient id='hellsky' cx='50%' cy='65%' r='75%'>
+            <stop offset='0%' stop-color='#ff6a00'/>
+            <stop offset='35%' stop-color='#8a0000'/>
+            <stop offset='70%' stop-color='#2a0000'/>
+            <stop offset='100%' stop-color='#050000'/>
+          </radialGradient>
+          <linearGradient id='embers' x1='0' y1='1' x2='0' y2='0'>
+            <stop offset='0%' stop-color='#ff9a3d' stop-opacity='0.9'/>
+            <stop offset='100%' stop-color='#ff9a3d' stop-opacity='0'/>
+          </linearGradient>
+        </defs>
+        <rect width='800' height='500' fill='url(#hellsky)'/>
+        <g opacity='0.7'>
+          <polygon points='150,500 210,120 270,500' fill='url(#embers)'/>
+          <polygon points='420,500 470,60 530,500' fill='url(#embers)' opacity='0.7'/>
+          <polygon points='620,500 660,160 700,500' fill='url(#embers)' opacity='0.6'/>
+        </g>
+        <g fill='#0a0000'>
+          <polygon points='0,500 80,320 160,420 260,280 340,500'/>
+          <polygon points='340,500 420,300 520,440 620,260 700,500'/>
+          <polygon points='620,500 700,380 800,460 800,500'/>
+        </g>
+      </svg>
+    `);
+  </script>
+
 
 </body>
 </html>
